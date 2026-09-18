@@ -7,10 +7,11 @@ entire personal workstation or requiring plugin downloads at startup.
 
 ## Availability
 
-**Repository and instructions are published; the initial configuration bundle is
-not attached yet.** A draft release is reserved for the first upload. GitHub's
-automatic source-code ZIP/tar downloads currently contain these documents, not
-the configuration bundle. Use an explicitly attached release asset when available.
+**The initial bundle is available as the [v0.1.0 prerelease](https://github.com/snarkipus/dotfiles/releases/tag/v0.1.0).**
+Download the explicitly attached `company-shell.tar.gz`, checksum, and manifest.
+GitHub's automatic source-code ZIP/tar downloads contain these documents, not
+the configuration bundle. Full interactive Zsh and tmux/plugin qualification on
+the receiving installation remains pending.
 
 - [Fresh WSL setup](docs/fresh-wsl.md)
 - [Publishing a configuration snapshot](docs/publishing.md)
