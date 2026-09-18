@@ -134,8 +134,54 @@ install -m 644 "$stage/home/.config/starship.toml" "$HOME/.config/starship.toml"
 ```
 
 These commands overwrite existing files: only use them after the backup/review
-above. They do not install the plugin trees. Without plugins, guarded loading
-skips them; the Zsh conveniences and tmux theme will be incomplete.
+above.
+
+**The plugin copy is required for the theme and Zsh plugins.** Run this block in
+Bash, in the same terminal where `$stage` was set. It checks every source and
+refuses to overwrite existing plugin directories before copying anything:
+
+```sh
+(
+  set -eu
+  : "${stage:?Set stage to the extracted bundle directory first}"
+  plugins=(
+    zsh/zsh-autosuggestions
+    zsh/zsh-syntax-highlighting
+    tmux/catppuccin
+    tmux/tmux-sensible
+    tmux/tmux-cpu
+    tmux/vim-tmux-navigator
+    tmux/tmux-resurrect
+    tmux/tmux-continuum
+  )
+  for item in "${plugins[@]}"; do
+    relative=".local/share/${item%%/*}/plugins/${item#*/}"
+    source="$stage/home/$relative"
+    destination="$HOME/$relative"
+    if [ ! -d "$source" ] || [ -L "$source" ]; then
+      printf 'STOP: missing or symlinked source: %s\n' "$source" >&2
+      exit 1
+    fi
+    if [ -e "$destination" ] || [ -L "$destination" ]; then
+      printf 'STOP: existing destination needs review: %s\n' "$destination" >&2
+      exit 1
+    fi
+  done
+  for item in "${plugins[@]}"; do
+    relative=".local/share/${item%%/*}/plugins/${item#*/}"
+    mkdir -p "$HOME/$(dirname "$relative")"
+    cp -a -- "$stage/home/$relative" "$HOME/$relative"
+  done
+  test -f "$HOME/.tmux.conf"
+  test -f "$HOME/.local/share/tmux/plugins/catppuccin/catppuccin.tmux"
+  printf 'CONFIG_AND_PLUGINS_INSTALLED\n'
+)
+```
+
+The archive already contains these plugins; no plugin download is necessary.
+If a source is missing, verify you extracted the release asset rather than the
+automatic GitHub Source code archive. If `$stage` was lost after closing the
+terminal, set it to the actual extraction directory, not its `home/` child.
 
 ## 6. Verify the installed shell and tmux
 
